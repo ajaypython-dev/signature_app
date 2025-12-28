@@ -1,0 +1,53 @@
+/* Container for the PDF page */
+.pdf-page-container {
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-bottom: 20px;
+}
+
+/* The invisible layer that sits on top of the PDF to hold fields */
+.annotation-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass through to PDF if needed */
+}
+
+/* Enable pointer events only on the fields themselves */
+.annotation-layer > * {
+  pointer-events: auto;
+}
+
+/* Admin Field Styles */
+.field-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(63, 136, 255, 0.2);
+  border: 2px dashed #2196f3;
+  color: #0d47a1;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.field-box:active {
+  cursor: grabbing;
+}
+
+/* User Field Styles */
+.signature-box {
+  background: rgba(255, 235, 59, 0.1); /* Yellow highlight for user */
+  border: 1px solid #fbc02d;
+  transition: all 0.2s;
+}
+
+.signature-box.signed {
+  background: transparent;
+  border: none;
+}
