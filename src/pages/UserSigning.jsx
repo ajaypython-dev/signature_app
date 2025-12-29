@@ -4,80 +4,98 @@ import PDFViewer from "../components/PDF/PDFViewer";
 import SignaturePadModal from "./SignaturePadModal";
 
 const UserSigning = () => {
-    const [pdfFile, setPdfFile] = useState(null);
-    const [fields, setFields] = useState([]);
-    const [signatures, setSignatures] = useState({});
+    const [pdfFiles, setPdfFiles] = useState([]);                 // NEW
+    const [activePdfIndex, setActivePdfIndex] = useState(0);     // NEW
+
+    const [fieldsByPdf, setFieldsByPdf] = useState({});           // NEW
+    const [signaturesByPdf, setSignaturesByPdf] = useState({});   // NEW
+
     const [activeField, setActiveField] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // NEW: page control
     const [currentPage, setCurrentPage] = useState(1);
     const [numPages, setNumPages] = useState(null);
 
+    const activePdf = pdfFiles[activePdfIndex];
+    const activeFields = fieldsByPdf[activePdfIndex] || [];
+    const activeSignatures = signaturesByPdf[activePdfIndex] || {};
+
     // -------------------------------
-    // Upload & Read Metadata
+    // Upload MULTIPLE PDFs
     // -------------------------------
     const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const files = Array.from(e.target.files).filter(
+            (f) => f.type === "application/pdf"
+        );
 
-        setPdfFile(file);
-        setCurrentPage(1);
-
-        const formData = new FormData();
-        formData.append("pdf", file);
-
-        try {
-            const res = await axios.post(
-                "http://127.0.0.1:8000/pdf/read-metadata",
-                formData
-            );
-
-            if (res.data.fields) {
-                setFields(res.data.fields);
-            }
-        } catch (err) {
-            alert("Failed to read PDF metadata");
+        if (!files.length) {
+            alert("Please upload valid PDF files.");
+            return;
         }
+
+        setPdfFiles(files);
+        setActivePdfIndex(0);
+        setCurrentPage(1);
+        setFieldsByPdf({});
+        setSignaturesByPdf({});
+
+        // Read metadata for each PDF
+        files.forEach(async (file, index) => {
+            const formData = new FormData();
+            formData.append("pdf", file);
+
+            try {
+                const res = await axios.post(
+                    "http://127.0.0.1:8000/pdf/read-metadata",
+                    formData
+                );
+
+                if (res.data.fields) {
+                    setFieldsByPdf((prev) => ({
+                        ...prev,
+                        [index]: res.data.fields,
+                    }));
+                }
+            } catch {
+                alert(`Failed to read metadata for ${file.name}`);
+            }
+        });
     };
 
     // -------------------------------
     // Page Navigation
     // -------------------------------
-    const goPrevPage = () => {
-        setCurrentPage((p) => Math.max(p - 1, 1));
-    };
-
-    const goNextPage = () => {
-        setCurrentPage((p) => Math.min(p + 1, numPages));
-    };
+    const goPrevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+    const goNextPage = () => setCurrentPage((p) => Math.min(p + 1, numPages));
 
     // -------------------------------
-    // Final Submit
+    // Sign & Download ACTIVE PDF
     // -------------------------------
-    const handleFinalSubmit = async () => {
-        if (Object.keys(signatures).length < fields.length) {
-            alert("Please sign all boxes before finishing.");
+    const handleSignAndDownload = async () => {
+        if (!activePdf) return;
+
+        if (Object.keys(activeSignatures).length < activeFields.length) {
+            alert("Please sign all fields before downloading.");
             return;
         }
 
         setIsProcessing(true);
 
-        const finalFields = fields.map((f) => ({
+        const finalFields = activeFields.map((f) => ({
             id: f.id,
             type: f.type,
-            pageIndex: f.pageIndex, // 🔑 REQUIRED for multi-page
+            pageIndex: f.pageIndex,
             coords: {
                 x: f.x,
                 y: f.y,
                 w: f.width,
-                h: f.height
+                h: f.height,
             },
-            base64: signatures[f.id]
+            base64: activeSignatures[f.id],
         }));
 
         const formData = new FormData();
-        formData.append("pdf", pdfFile);
+        formData.append("pdf", activePdf);
         formData.append("fields", JSON.stringify(finalFields));
 
         try {
@@ -87,18 +105,15 @@ const UserSigning = () => {
                 { responseType: "blob" }
             );
 
-            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const url = URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute(
-                "download",
-                pdfFile.name.replace(".pdf", "_signed.pdf")
-            );
-            document.body.appendChild(link);
+            link.download = activePdf.name.replace(".pdf", "_signed.pdf");
             link.click();
-            link.remove();
-        } catch (err) {
-            alert("Error applying signature");
+            URL.revokeObjectURL(url);
+
+        } catch {
+            alert("Failed to apply signature.");
         } finally {
             setIsProcessing(false);
         }
@@ -106,47 +121,57 @@ const UserSigning = () => {
 
     return (
         <div className="user-signing-page">
-            <header
-                style={{
-                    padding: "10px",
-                    background: "#eee",
-                    display: "flex",
-                    gap: "10px",
-                    alignItems: "center"
-                }}
-            >
-                <input type="file" onChange={handleFileUpload} accept=".pdf" />
+            <header style={{ padding: 10, background: "#eee", display: "flex", gap: 10 }}>
+                <input type="file" accept=".pdf" multiple onChange={handleFileUpload} />
 
                 <button
-                    onClick={handleFinalSubmit}
-                    disabled={isProcessing}
+                    onClick={handleSignAndDownload}
+                    disabled={!activePdf || isProcessing}
                     style={{ background: "blue", color: "white" }}
                 >
-                    {isProcessing ? "Generating PDF..." : "Sign & Download Final"}
+                    {isProcessing ? "Processing..." : "Sign & Download"}
                 </button>
-
-                {pdfFile && numPages && (
-                    <div style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                        <button onClick={goPrevPage} disabled={currentPage === 1}>
-                            ◀ Prev
-                        </button>
-                        <span>
-                            Page {currentPage} / {numPages}
-                        </span>
-                        <button
-                            onClick={goNextPage}
-                            disabled={currentPage === numPages}
-                        >
-                            Next ▶
-                        </button>
-                    </div>
-                )}
             </header>
 
-            <div style={{ position: "relative", marginTop: "20px" }}>
-                {pdfFile && (
+            {/* PDF TABS */}
+            {pdfFiles.length > 1 && (
+                <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+                    {pdfFiles.map((file, index) => (
+                        <button
+                            key={index}
+                            onClick={() => {
+                                setActivePdfIndex(index);
+                                setCurrentPage(1);
+                            }}
+                            style={{
+                                fontWeight: index === activePdfIndex ? "bold" : "normal"
+                            }}
+                        >
+                            {file.name}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* PAGE CONTROLS */}
+            {activePdf && numPages && (
+                <div style={{ marginTop: 10 }}>
+                    <button onClick={goPrevPage} disabled={currentPage === 1}>
+                        ◀ Prev
+                    </button>
+                    <span style={{ margin: "0 10px" }}>
+                        Page {currentPage} / {numPages}
+                    </span>
+                    <button onClick={goNextPage} disabled={currentPage === numPages}>
+                        Next ▶
+                    </button>
+                </div>
+            )}
+
+            <div style={{ position: "relative", marginTop: 20 }}>
+                {activePdf && (
                     <PDFViewer
-                        pdfFile={pdfFile}
+                        pdfFile={activePdf}
                         pageNumber={currentPage}
                         onDocumentLoadSuccess={({ numPages }) =>
                             setNumPages(numPages)
@@ -154,8 +179,7 @@ const UserSigning = () => {
                     />
                 )}
 
-                {/* Page-aware fields */}
-                {fields
+                {activeFields
                     .filter((f) => f.pageIndex === currentPage)
                     .map((field) => (
                         <div
@@ -167,7 +191,7 @@ const UserSigning = () => {
                                 top: field.y,
                                 width: field.width,
                                 height: field.height,
-                                border: signatures[field.id]
+                                border: activeSignatures[field.id]
                                     ? "2px solid green"
                                     : "2px dashed #007bff",
                                 cursor: "pointer",
@@ -176,21 +200,13 @@ const UserSigning = () => {
                                 justifyContent: "center"
                             }}
                         >
-                            {signatures[field.id] ? (
+                            {activeSignatures[field.id] ? (
                                 <img
-                                    src={signatures[field.id]}
-                                    style={{
-                                        maxWidth: "100%",
-                                        maxHeight: "100%"
-                                    }}
+                                    src={activeSignatures[field.id]}
+                                    style={{ maxWidth: "100%", maxHeight: "100%" }}
                                 />
                             ) : (
-                                <span
-                                    style={{
-                                        fontSize: "10px",
-                                        color: "#007bff"
-                                    }}
-                                >
+                                <span style={{ fontSize: 10, color: "#007bff" }}>
                                     Click to {field.type}
                                 </span>
                             )}
@@ -203,10 +219,13 @@ const UserSigning = () => {
                     field={activeField}
                     onClose={() => setActiveField(null)}
                     onSave={(base64) => {
-                        setSignatures({
-                            ...signatures,
-                            [activeField.id]: base64
-                        });
+                        setSignaturesByPdf((prev) => ({
+                            ...prev,
+                            [activePdfIndex]: {
+                                ...(prev[activePdfIndex] || {}),
+                                [activeField.id]: base64
+                            }
+                        }));
                         setActiveField(null);
                     }}
                 />
