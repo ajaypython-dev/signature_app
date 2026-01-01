@@ -1,0 +1,961 @@
+/* ============================================
+   PDF Editor - Professional UI Styles
+   ============================================ */
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --success-color: #10b981;
+  --success-hover: #059669;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --bg-light: #f8fafc;
+  --bg-dark: #1e293b;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+/* ============================================
+   Main Container Layout
+   ============================================ */
+
+.editor-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--bg-light);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.editor-container.sign-page {
+  --primary-color: #10b981;
+  --primary-hover: #059669;
+}
+
+/* ============================================
+   Left Sidebar - Page Thumbnails
+   ============================================ */
+
+.editor-left-sidebar {
+  width: 120px;
+  min-width: 120px;
+  background: #fff;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header-section {
+  padding: 16px 12px 12px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-section-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.thumbnail-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-thumbnail {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.page-thumbnail:hover {
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.page-thumbnail.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.sign-page .page-thumbnail.active {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.page-thumbnail canvas {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.page-number {
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  background: #f8fafc;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 16px;
+  text-align: center;
+}
+
+/* ============================================
+   Main Editor Area
+   ============================================ */
+
+.editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ============================================
+   Top Toolbar
+   ============================================ */
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  min-height: 60px;
+  gap: 16px;
+}
+
+.editor-toolbar.sign-mode {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-icon {
+  color: var(--primary-color);
+  font-size: 24px !important;
+}
+
+.brand-icon.sign {
+  color: var(--success-color);
+}
+
+.brand-title {
+  font-weight: 700 !important;
+  color: var(--primary-color);
+  font-size: 18px !important;
+}
+
+.brand-title.sign {
+  color: var(--success-color);
+}
+
+.file-tabs-inline {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.file-chip {
+  max-width: 150px;
+}
+
+.progress-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar-inline {
+  width: 80px;
+  height: 6px !important;
+  border-radius: 3px;
+}
+
+/* ============================================
+   Canvas / PDF Viewer Area
+   ============================================ */
+
+.editor-canvas-area {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+  background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+}
+
+.pdf-wrapper {
+  transition: transform 0.15s ease;
+}
+
+.pdf-page-wrapper {
+  position: relative;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+  border-radius: 2px;
+}
+
+.pdf-page-wrapper canvas {
+  display: block !important;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.empty-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 72px !important;
+  color: #cbd5e1;
+}
+
+.empty-upload-btn {
+  margin-top: 16px !important;
+  background: var(--primary-color) !important;
+  padding: 10px 24px !important;
+  border-radius: var(--radius-md) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+}
+
+.empty-upload-btn.success {
+  background: var(--success-color) !important;
+}
+
+/* ============================================
+   Fields Layer & Draggable Fields
+   ============================================ */
+
+.fields-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.fields-layer > * {
+  pointer-events: auto;
+}
+
+.draggable-field {
+  border: 2px dashed var(--primary-color) !important;
+  background: rgba(79, 70, 229, 0.08) !important;
+  border-radius: var(--radius-sm);
+  cursor: move;
+  z-index: 10;
+}
+
+.draggable-field.signature {
+  border-color: #4f46e5 !important;
+  background: rgba(79, 70, 229, 0.08) !important;
+}
+
+.draggable-field.initial {
+  border-color: #8b5cf6 !important;
+  background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.draggable-field.date {
+  border-color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+
+.field-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.field-label {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary-color);
+}
+
+.draggable-field.initial .field-label {
+  color: #8b5cf6;
+}
+
+.draggable-field.date .field-label {
+  color: #f59e0b;
+}
+
+.field-delete-btn {
+  position: absolute !important;
+  top: -10px;
+  right: -10px;
+  background: var(--danger-color) !important;
+  color: #fff !important;
+  width: 22px !important;
+  height: 22px !important;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.draggable-field:hover .field-delete-btn {
+  opacity: 1;
+}
+
+/* ============================================
+   Signable Fields (Sign Page)
+   ============================================ */
+
+.signable-field {
+  border: 2px dashed var(--primary-color);
+  background: rgba(79, 70, 229, 0.08);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.signable-field.signature {
+  border-color: #4f46e5;
+}
+
+.signable-field.initial {
+  border-color: #8b5cf6;
+}
+
+.signable-field.date {
+  border-color: #f59e0b;
+}
+
+.signable-field:hover:not(.signed) {
+  background: rgba(79, 70, 229, 0.15);
+  transform: scale(1.02);
+}
+
+.signable-field.signed {
+  border: 2px solid var(--success-color);
+  background: rgba(16, 185, 129, 0.05);
+  cursor: default;
+}
+
+.field-placeholder {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.signature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.date-display {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ============================================
+   Page Controls Bar
+   ============================================ */
+
+.page-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: var(--bg-dark);
+  border-radius: 40px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+}
+
+.controls-group {
+  display: flex;
+  align-items: center;
+}
+
+.controls-group.zoom-group {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.page-controls-bar .MuiIconButton-root {
+  color: #fff !important;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-input-field {
+  width: 45px;
+}
+
+.page-input-field .MuiInputBase-root {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+}
+
+.page-input-field .MuiInputBase-input {
+  color: #fff;
+  font-size: 13px;
+}
+
+.page-total-text {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.zoom-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* ============================================
+   Right Sidebar
+   ============================================ */
+
+.editor-right-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: #fff;
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editor-right-sidebar.sign-mode .sidebar-title.sign {
+  color: var(--success-color);
+}
+
+.sidebar-title {
+  font-weight: 700 !important;
+  color: var(--primary-color);
+}
+
+.sidebar-info-box {
+  padding: 14px 16px;
+  margin: 12px 16px;
+  background: #f8fafc;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.sidebar-info-box.sign {
+  border-left-color: var(--success-color);
+  background: #f0fdf4;
+}
+
+.sidebar-info-box p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+.section-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+/* Upload Area */
+.upload-area {
+  margin-bottom: 20px;
+}
+
+.upload-button {
+  text-transform: none !important;
+  padding: 14px !important;
+  border-style: dashed !important;
+  border-width: 2px !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 500 !important;
+}
+
+/* Files List */
+.files-list {
+  margin-bottom: 20px;
+}
+
+.file-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-list-item:hover {
+  background: #f8fafc;
+}
+
+.file-list-item.active {
+  border-color: var(--primary-color);
+  background: rgba(79, 70, 229, 0.05);
+}
+
+.sign-page .file-list-item.active {
+  border-color: var(--success-color);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.file-list-item.complete {
+  border-color: var(--success-color);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.complete-icon {
+  color: var(--success-color);
+}
+
+.file-name-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-badge {
+  font-size: 11px !important;
+  height: 22px !important;
+  background: #e2e8f0 !important;
+}
+
+.status-badge {
+  font-size: 11px !important;
+  height: 22px !important;
+}
+
+/* Field Tools */
+.field-tools {
+  margin-bottom: 20px;
+}
+
+.field-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field-type-btn {
+  padding: 12px 8px !important;
+  border-radius: var(--radius-md) !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  border-width: 2px !important;
+}
+
+.field-type-btn.signature {
+  border-color: #4f46e5 !important;
+  color: #4f46e5 !important;
+}
+
+.field-type-btn.signature:hover {
+  background: rgba(79, 70, 229, 0.08) !important;
+}
+
+.field-type-btn.initial {
+  border-color: #8b5cf6 !important;
+  color: #8b5cf6 !important;
+}
+
+.field-type-btn.initial:hover {
+  background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.field-type-btn.date {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+  grid-column: 1 / -1;
+}
+
+.field-type-btn.date:hover {
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+
+.field-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.field-icon {
+  font-size: 20px;
+}
+
+/* Progress Section */
+.progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-bar-section {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.main-progress-bar {
+  height: 8px !important;
+  border-radius: 4px !important;
+  margin-bottom: 8px;
+}
+
+.progress-text {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.primary-action-btn {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%) !important;
+  color: #fff !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  padding: 14px !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 15px !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+}
+
+.primary-action-btn:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4) !important;
+}
+
+.primary-action-btn.success {
+  background: linear-gradient(135deg, var(--success-color) 0%, var(--success-hover) 100%) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+.primary-action-btn.success:hover {
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+.primary-action-btn:disabled {
+  background: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   Signature Dialog
+   ============================================ */
+
+.signature-dialog .MuiDialog-paper {
+  border-radius: var(--radius-lg) !important;
+}
+
+.dialog-title {
+  font-weight: 600 !important;
+  padding: 16px 24px !important;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dialog-close-btn {
+  position: absolute !important;
+  right: 12px;
+  top: 12px;
+}
+
+.dialog-content {
+  padding: 24px !important;
+}
+
+.canvas-container {
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.signature-pad {
+  display: block;
+  width: 100% !important;
+  height: 180px;
+  touch-action: none;
+}
+
+.date-input {
+  margin-top: 8px;
+}
+
+.dialog-actions {
+  padding: 16px 24px !important;
+  border-top: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.clear-btn {
+  color: var(--text-secondary) !important;
+}
+
+.apply-btn {
+  background: var(--primary-color) !important;
+  color: #fff !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  padding: 8px 20px !important;
+}
+
+/* ============================================
+   Mobile Drawer Styles
+   ============================================ */
+
+.mobile-drawer-left .MuiDrawer-paper,
+.mobile-drawer-right .MuiDrawer-paper {
+  width: 280px;
+  max-width: 85vw;
+}
+
+.mobile-drawer-left .editor-left-sidebar,
+.mobile-drawer-right .editor-right-sidebar {
+  width: 100%;
+  min-width: unset;
+  height: 100%;
+}
+
+/* ============================================
+   Responsive Styles
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .editor-right-sidebar {
+    width: 260px;
+    min-width: 260px;
+  }
+}
+
+@media (max-width: 960px) {
+  .editor-left-sidebar,
+  .editor-right-sidebar {
+    display: none;
+  }
+
+  .mobile-drawer-left .editor-left-sidebar,
+  .mobile-drawer-right .editor-right-sidebar {
+    display: flex;
+  }
+
+  .editor-canvas-area {
+    padding: 16px;
+    padding-bottom: 80px;
+  }
+
+  .page-controls-bar {
+    bottom: 16px;
+    padding: 8px 16px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .editor-toolbar {
+    padding: 10px 12px;
+    min-height: 52px;
+  }
+
+  .toolbar-brand .brand-title {
+    font-size: 16px !important;
+  }
+
+  .file-tabs-inline {
+    max-width: 150px;
+  }
+
+  .file-chip {
+    max-width: 100px;
+  }
+
+  .page-controls-bar {
+    width: calc(100% - 32px);
+    left: 16px;
+    transform: none;
+    justify-content: space-between;
+    border-radius: 24px;
+  }
+
+  .editor-canvas-area {
+    padding: 12px;
+    padding-bottom: 72px;
+  }
+
+  .field-buttons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .signature-pad {
+    height: 140px;
+  }
+
+  .sidebar-info-box {
+    margin: 8px 12px;
+    padding: 10px 12px;
+  }
+
+  .sidebar-content {
+    padding: 0 12px;
+  }
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+
+.thumbnail-list::-webkit-scrollbar,
+.editor-canvas-area::-webkit-scrollbar,
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thumbnail-list::-webkit-scrollbar-track,
+.editor-canvas-area::-webkit-scrollbar-track,
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thumbnail-list::-webkit-scrollbar-thumb,
+.editor-canvas-area::-webkit-scrollbar-thumb,
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.thumbnail-list::-webkit-scrollbar-thumb:hover,
+.editor-canvas-area::-webkit-scrollbar-thumb:hover,
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+   React PDF Fixes
+   ============================================ */
+
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page {
+  margin: 0 !important;
+}
+
+.react-pdf__Page__canvas {
+  display: block !important;
+}
